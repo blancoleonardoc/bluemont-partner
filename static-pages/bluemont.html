@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bluemont · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=1" />
+  <style>
+    /* ── bluemont-specific ── */
+    .upload-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.6rem;
+    }
+    .upload-banner summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.88rem;
+    }
+    .upload-banner summary::-webkit-details-marker { display: none; }
+    .upload-banner summary::before {
+      content: '▸';
+      color: var(--accent);
+      transition: transform 0.15s;
+      display: inline-block;
+    }
+    .upload-banner[open] summary::before { transform: rotate(90deg); }
+    .upload-banner .up-status {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+    @media (max-width: 720px) { .upload-grid { grid-template-columns: 1fr; } }
+    .upload-slot {
+      padding: 0.8rem 1rem;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+    }
+    .upload-slot h4 { font-size: 0.78rem; font-weight: 600; margin-bottom: 0.4rem; letter-spacing: 0.02em; }
+    .upload-slot p { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.7rem; line-height: 1.5; }
+    .upload-slot input[type="file"] {
+      width: 100%;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: inherit;
+    }
+    .upload-slot input[type="file"]::file-selector-button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.35rem 0.8rem;
+      font-family: inherit;
+      font-size: 0.72rem;
+      border-radius: 3px;
+      margin-right: 0.8rem;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+    }
+    .upload-slot input[type="file"]::file-selector-button:hover { background: var(--accent); color: var(--bg); }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.18rem 0.55rem;
+      background: rgba(0, 212, 232, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0, 212, 232, 0.25);
+      border-radius: 3px;
+      font-size: 0.68rem;
+      letter-spacing: 0.02em;
+      margin: 0.2rem 0.3rem 0.2rem 0;
+    }
+    .chip.error { background: rgba(240, 107, 107, 0.12); color: #f06b6b; border-color: rgba(240, 107, 107, 0.3); }
+    .chip .chip-x { cursor: pointer; color: var(--muted); padding-left: 0.25rem; }
+    .chip .chip-x:hover { color: var(--text); }
+
+    /* filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      padding: 0.9rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 1.6rem;
+      align-items: center;
+    }
+    .filter-bar label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-right: 0.35rem;
+    }
+    .filter-bar select {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.6rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      min-width: 140px;
+      max-width: 220px;
+    }
+    .filter-bar .count {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* section */
+    .section {
+      margin-bottom: 2.4rem;
+    }
+    .section-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .section-title::before {
+      content: '';
+      width: 20px; height: 1px;
+      background: var(--accent);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; }
+    @media (max-width: 1000px) { .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 680px)  { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+    .chart-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.2rem 0.8rem;
+    }
+    .chart-box h3 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.25rem;
+    }
+    .chart-box .chart-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+      letter-spacing: 0.02em;
+    }
+    .chart-box .echart { width: 100%; height: 260px; }
+    .chart-box.tall .echart { height: 340px; }
+
+    .empty-state {
+      padding: 3rem 1rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+
+    /* tabelas densas */
+    table.dense { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    table.dense th, table.dense td {
+      padding: 0.45rem 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-variant-numeric: tabular-nums;
+    }
+    table.dense th {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    table.dense td.num { text-align: right; }
+    table.dense tbody tr:last-child td { border-bottom: none; }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.8rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      margin-bottom: 0.7rem;
+    }
+    .search-input:focus { border-color: var(--accent); outline: none; }
+
+    .pager {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .pager button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.3rem 0.7rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .pager button:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
+    .pager button:disabled { opacity: 0.3; cursor: not-allowed; }
+  </style>
+</head>
+<body class="partner">
+
+  <div id="sidebar-mount"></div>
+
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>bluemont</h1>
+      <p>visão operacional da base · dados XP (positivador + diversificação).</p>
+    </div>
+
+    <details class="upload-banner" id="upload-banner" open>
+      <summary>
+        <strong>fontes de dados</strong>
+        <span class="up-status" id="up-status">nenhum arquivo carregado</span>
+      </summary>
+      <div class="upload-grid">
+        <div class="upload-slot">
+          <h4>Positivador (múltiplos)</h4>
+          <p>snapshots mensais — selecione todos de uma vez (CSV · 41 colunas).</p>
+          <input type="file" id="file-positivador" accept=".csv" multiple />
+        </div>
+        <div class="upload-slot">
+          <h4>Diversificação (1 snapshot)</h4>
+          <p>posições ativo-a-ativo do mês mais recente (CSV · 14 colunas).</p>
+          <input type="file" id="file-diversificacao" accept=".csv" />
+        </div>
+      </div>
+      <div id="upload-chips" style="margin-top:0.9rem"></div>
+    </details>
+
+    <div class="filter-bar" id="filter-bar" style="display:none">
+      <label>assessor</label>
+      <select id="f-assessor"></select>
+      <label>segmento</label>
+      <select id="f-segmento"></select>
+      <button class="btn ghost" id="btn-clear-filters" style="font-size:0.72rem;padding:0.35rem 0.7rem">limpar</button>
+      <span class="count" id="filter-count"></span>
+    </div>
+
+    <div id="content">
+      <div class="empty-state">
+        carregue pelo menos um Positivador para começar.<br>
+        <small>os dados ficam apenas em memória — nada é enviado ou persistido.</small>
+      </div>
+    </div>
+
+    <!-- Seção 1 · Visão geral -->
+    <template id="tpl-section-1">
+      <div class="section">
+        <div class="section-title">visão geral</div>
+        <div class="grid-4" style="margin-bottom:1rem">
+          <div class="card"><div class="card-label">AUM total</div><div class="card-value" id="kpi-aum">—</div><div class="card-sub" id="kpi-aum-delta"></div></div>
+          <div class="card"><div class="card-label">clientes ativos</div><div class="card-value" id="kpi-clientes">—</div><div class="card-sub" id="kpi-clientes-delta"></div></div>
+          <div class="card"><div class="card-label">receita no mês</div><div class="card-value" id="kpi-receita">—</div><div class="card-sub" id="kpi-receita-delta"></div></div>
+          <div class="card"><div class="card-label">captação líquida</div><div class="card-value" id="kpi-capt">—</div><div class="card-sub" id="kpi-capt-delta"></div></div>
+        </div>
+        <div class="grid-2">
+          <div class="chart-box"><h3>evolução · AUM</h3><div class="chart-sub">por snapshot</div><div class="echart" id="chart-aum-evol"></div></div>
+          <div class="chart-box"><h3>receita e captação</h3><div class="chart-sub">mensal · eixos separados</div><div class="echart" id="chart-rec-capt"></div></div>
+        </div>
+        <div class="card" style="margin-top:1rem"><div class="card-label">ROA anualizado (último mês)</div><div class="card-value" id="kpi-roa">—</div><div class="card-sub">receita do mês ÷ AUM × 12</div></div>
+      </div>
+    </template>
+
+    <!-- Seção 2 · Mix -->
+    <template id="tpl-section-2">
+      <div class="section">
+        <div class="section-title">mix e composição</div>
+        <div class="grid-2">
+          <div class="chart-box"><h3>mix de AUM · snapshot atual</h3><div class="chart-sub">por classe</div><div class="echart" id="chart-mix-atual"></div></div>
+          <div class="chart-box"><h3>mix de receita · snapshot atual</h3><div class="chart-sub">por fonte</div><div class="echart" id="chart-rec-mix"></div></div>
+        </div>
+        <div class="chart-box tall" style="margin-top:1rem"><h3>mix de AUM ao longo do tempo</h3><div class="chart-sub">stacked · por classe</div><div class="echart" id="chart-mix-temporal"></div></div>
+      </div>
+    </template>
+
+    <!-- Seção 3 · Base de clientes -->
+    <template id="tpl-section-3">
+      <div class="section">
+        <div class="section-title">base de clientes</div>
+
+        <div class="grid-2" style="margin-bottom:1rem">
+          <div class="chart-box tall">
+            <h3>concentração · top 10</h3>
+            <div class="chart-sub" id="conc-sub"></div>
+            <div id="conc-table"></div>
+          </div>
+          <div class="chart-box tall">
+            <h3>curva de Lorenz</h3>
+            <div class="chart-sub" id="lorenz-sub"></div>
+            <div class="echart" id="chart-lorenz"></div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:1rem">
+          <div class="chart-box"><h3>por segmento</h3><div class="chart-sub">clientes × AUM</div><div class="echart" id="chart-segmento"></div></div>
+          <div class="chart-box"><h3>distribuição etária</h3><div class="chart-sub">clientes e AUM por faixa</div><div class="echart" id="chart-idade"></div></div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:1rem">
+          <div class="chart-box"><h3>top 10 profissões</h3><div class="chart-sub">por contagem</div><div id="prof-table"></div></div>
+          <div class="chart-box">
+            <h3>churn · último mês</h3>
+            <div class="chart-sub">quem evadiu e quanto AUM saiu</div>
+            <div id="churn-box"></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="chart-box"><h3>cross-sell · produtos por cliente</h3><div class="chart-sub">0 a 3 classes (bolsa/fundo/RF)</div><div class="echart" id="chart-crosssell"></div></div>
+          <div class="chart-box"><h3>monoproduto com AUM &gt; R$ 500k</h3><div class="chart-sub">alvos de cross-sell</div><div id="mono-table"></div></div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Seção 4 · Diversificação -->
+    <template id="tpl-section-4">
+      <div class="section" id="section-4">
+        <div class="section-title">diversificação · posições</div>
+
+        <div class="grid-2" style="margin-bottom:1rem">
+          <div class="chart-box tall"><h3>top 20 emissores</h3><div class="chart-sub">exposição agregada</div><div id="emissores-table"></div></div>
+          <div class="chart-box tall"><h3>top 20 fundos</h3><div class="chart-sub">por CNPJ</div><div id="fundos-table"></div></div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:1rem">
+          <div class="chart-box"><h3>fator de risco</h3><div class="chart-sub">distribuição do AUM</div><div class="echart" id="chart-fator"></div></div>
+          <div class="chart-box"><h3>escada de vencimentos · RF</h3><div class="chart-sub">AUM por bucket</div><div class="echart" id="chart-escada"></div></div>
+        </div>
+
+        <div class="chart-box">
+          <h3>posições · tabela pesquisável</h3>
+          <div class="chart-sub" id="pos-sub"></div>
+          <input type="text" id="pos-search" class="search-input" placeholder="buscar por cliente, emissor, ativo, produto…" />
+          <table class="dense">
+            <thead>
+              <tr>
+                <th>cliente</th>
+                <th>produto</th>
+                <th>ativo</th>
+                <th>emissor</th>
+                <th>venc.</th>
+                <th class="num">qtd.</th>
+                <th class="num">net</th>
+              </tr>
+            </thead>
+            <tbody id="pos-tbody"></tbody>
+          </table>
+          <div class="pager">
+            <button id="pos-prev">◂ anterior</button>
+            <span id="pos-pageinfo"></span>
+            <button id="pos-next">próxima ▸</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="partner.js?v=1"></script>
+  <script src="bluemont-parse.js?v=1"></script>
+  <script src="bluemont-agg.js?v=1"></script>
+  <script src="bluemont.js?v=1"></script>
+  <script>initSidebar('bluemont'); initBluemont();</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>serviços · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=1" />
+</head>
+<body class="partner">
+
+  <div id="sidebar-mount"></div>
+
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>serviços</h1>
+      <p>oportunidades geradas a partir dos interesses dos clientes.</p>
+    </div>
+
+    <section class="card" style="margin-bottom:1.8rem">
+      <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1.1rem">cadastrar nova oportunidade</h3>
+      <form id="form-opp" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.9rem;align-items:end">
+        <div class="field" style="display:flex;flex-direction:column;gap:0.35rem">
+          <label style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">cliente</label>
+          <select id="f-opp-cliente" name="cliente" required style="background:var(--bg);border:1px solid var(--border);padding:0.55rem 0.75rem;color:var(--text);font-family:inherit;border-radius:4px"></select>
+        </div>
+        <div class="field" style="display:flex;flex-direction:column;gap:0.35rem">
+          <label style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">categoria</label>
+          <select id="f-opp-categoria" name="categoria" required style="background:var(--bg);border:1px solid var(--border);padding:0.55rem 0.75rem;color:var(--text);font-family:inherit;border-radius:4px"></select>
+        </div>
+        <div class="field" style="display:flex;flex-direction:column;gap:0.35rem">
+          <label style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">valor estimado (R$)</label>
+          <input type="number" name="valor" min="0" step="1000" placeholder="0" style="background:var(--bg);border:1px solid var(--border);padding:0.55rem 0.75rem;color:var(--text);font-family:inherit;border-radius:4px" />
+        </div>
+        <div class="field" style="display:flex;flex-direction:column;gap:0.35rem;grid-column:1/-1">
+          <label style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">descrição</label>
+          <input type="text" name="descricao" placeholder="ex: refinanciamento de imóvel comercial" style="background:var(--bg);border:1px solid var(--border);padding:0.55rem 0.75rem;color:var(--text);font-family:inherit;border-radius:4px" />
+        </div>
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end">
+          <button type="submit" class="btn">+ cadastrar</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="opps-list"></section>
+  </main>
+
+  <script src="partner.js?v=1"></script>
+  <script src="servicos.js?v=1"></script>
+  <script>
+    initSidebar('servicos');
+    initServicos();
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "austero-static (raiz)",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8000", "--directory", "/Users/leonardoblanco/Desktop/3. Study/code/austero"],
+      "port": 8000
+    },
+    {
+      "name": "partner-only",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8001", "--directory", "/Users/leonardoblanco/Desktop/3. Study/code/austero/partner"],
+      "port": 8001
+    }
+  ]
+}

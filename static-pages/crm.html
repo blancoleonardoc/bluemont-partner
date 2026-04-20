@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crm · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=1" />
+  <style>
+    /* ── crm-specific (forkado de intranet-planner) ── */
+    :root { --up:#3dd68c; --down:#f06b6b; --warning:#f0a64b; --meta-text:#3a5068; }
+
+    .assessor-info {
+      display: flex; align-items: center; gap: 1.5rem;
+      margin-top: 0.4rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em;
+    }
+    .assessor-info span { color: var(--text); font-weight: 600; }
+
+    .kpi-bar {
+      padding: 1.2rem 0 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 0; margin-bottom: 1.6rem;
+    }
+    .kpi-item { flex: 1; padding: 0 1.4rem; border-right: 1px solid var(--border); }
+    .kpi-item:first-child { padding-left: 0; }
+    .kpi-item:last-child { border-right: none; padding-right: 0; }
+    .kpi-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.25rem; }
+    .kpi-value { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+    .kpi-meta  { font-size: 0.65rem; color: var(--meta-text); letter-spacing: 0.04em; }
+
+    .kanban { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; align-items: start; }
+    .kanban-col { min-width: 0; }
+    .kanban-header { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 0; margin-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
+    .kanban-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .kanban-dot.late { background: var(--down); }
+    .kanban-dot.pending { background: var(--warning); }
+    .kanban-dot.progress { background: var(--up); }
+    .kanban-dot.ok { background: var(--accent); }
+    .kanban-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .kanban-count { font-size: 0.68rem; color: var(--meta-text); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+    .client-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 1rem 1rem 1rem 1.1rem; margin-bottom: 0.6rem; cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s; position: relative;
+    }
+    .client-card::before { content:''; position:absolute; left:0; top:0; width:3px; height:0; border-radius:3px 0 0 3px; transition: height 0.3s ease; }
+    .client-card:hover::before { height: 100%; }
+    .client-card:hover { border-color: rgba(122,144,168,0.3); transform: translateY(-1px); }
+    .col-ok .client-card::before { background: var(--accent); }
+    .col-progress .client-card::before { background: var(--up); }
+    .col-pending .client-card::before { background: var(--warning); }
+    .col-late .client-card::before { background: var(--down); }
+
+    .card-top { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.7rem; }
+    .card-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+    .card-avatar.conservador { color: var(--accent); }
+    .card-avatar.moderado { color: var(--up); }
+    .card-avatar.arrojado { color: var(--warning); }
+    .card-avatar.agressivo { color: var(--down); }
+    .card-name { font-size: 0.82rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+
+    .card-details { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+    .card-patrimonio { font-size: 0.82rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .card-change { font-size: 0.65rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .card-change.up { color: var(--up); }
+    .card-change.down { color: var(--down); }
+    .card-change.warn { color: var(--warning); }
+    .card-meta { font-size: 0.62rem; color: var(--meta-text); letter-spacing: 0.04em; }
+
+    .card-tags { display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap; }
+    .card-tag { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 3px; background: rgba(0, 212, 232, 0.08); color: var(--accent); }
+    .card-tag.conservador { background: rgba(0, 212, 232, 0.12); color: var(--accent); }
+    .card-tag.moderado { background: rgba(61, 214, 140, 0.12); color: var(--up); }
+    .card-tag.arrojado { background: rgba(240, 166, 75, 0.12); color: var(--warning); }
+    .card-tag.agressivo { background: rgba(240, 107, 107, 0.12); color: var(--down); }
+
+    .card-edit-btn { position: absolute; top: 0.7rem; right: 0.7rem; width: 24px; height: 24px; border: none; background: none; cursor: pointer; color: var(--meta-text); transition: color 0.2s; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .card-edit-btn:hover { color: var(--accent); }
+    .card-edit-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .card-panel { display: none; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--border); }
+    .card-panel.open { display: block; }
+    .panel-row { margin-bottom: 0.8rem; }
+    .panel-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .panel-input, .panel-select, .panel-textarea {
+      width: 100%; padding: 0.45rem 0.6rem; background: var(--border); color: var(--text);
+      border: 1px solid rgba(20,32,53,0.8); border-radius: 4px;
+      font-family: inherit; font-size: 0.72rem; outline: none; transition: border-color 0.2s;
+    }
+    .panel-input:focus, .panel-select:focus, .panel-textarea:focus { border-color: var(--accent); }
+    .panel-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237a90a8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; padding-right: 2rem; }
+    .panel-select option { background: var(--surface); color: var(--text); }
+    .panel-textarea { min-height: 52px; resize: vertical; line-height: 1.5; }
+    .panel-textarea::placeholder { color: var(--muted); opacity: 0.5; }
+
+    .panel-comments { margin-top: 0.5rem; }
+    .panel-comment { font-size: 0.65rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(20,32,53,0.5); line-height: 1.5; }
+    .panel-comment:last-child { border-bottom: none; }
+    .panel-comment-author { color: var(--text); font-weight: 600; }
+    .panel-comment-date { color: var(--meta-text); margin-left: 0.4rem; }
+
+    .add-card { border: 1px dashed var(--border); border-radius: 6px; padding: 0.7rem; text-align: center; font-size: 0.72rem; color: var(--meta-text); cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .add-card:hover { border-color: var(--accent); color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .kanban { grid-template-columns: 1fr 1fr; }
+      .kpi-bar { flex-wrap: wrap; }
+      .kpi-item { flex: 1 1 45%; border-right: none; padding: 0.6rem 0; }
+    }
+    @media (max-width: 560px) {
+      .kanban { grid-template-columns: 1fr; }
+      .kpi-item { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body class="partner">
+
+  <div id="sidebar-mount"></div>
+
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>painel de clientes</h1>
+      <p>visão geral dos clientes e planejamentos</p>
+      <div class="assessor-info">
+        <div>assessor: <span>Rafael Costa</span></div>
+        <div>escritório: <span>Campo Mourão — PR</span></div>
+        <div>atualizado em <span>14 abr 2026</span></div>
+      </div>
+    </div>
+
+    <div class="kpi-bar">
+      <div class="kpi-item">
+        <div class="kpi-label">Total Clientes</div>
+        <div class="kpi-value">12</div>
+        <div class="kpi-meta">3 novos este mês</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">AUM Total</div>
+        <div class="kpi-value">R$ 18.4M</div>
+        <div class="kpi-meta">patrimônio sob assessoria</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Patrimônio Médio</div>
+        <div class="kpi-value">R$ 1.53M</div>
+        <div class="kpi-meta">por cliente</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Pendentes</div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-meta">planos em revisão</div>
+      </div>
+    </div>
+
+    <div class="kanban">
+
+      <div class="kanban-col col-late">
+        <div class="kanban-header"><div class="kanban-dot late"></div><span class="kanban-title">Atrasado</span><span class="kanban-count">2</span></div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar arrojado">LS</div><div class="card-name">Luciana Silva Campos</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 2.180.400</span><span class="card-change up">118% CDI</span></div>
+          <div class="card-meta">28 jan 2026</div>
+          <div class="card-tags"><span class="card-tag arrojado">arrojado</span><span class="card-tag">follow-up</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-01-28"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">15 jan</span><br>Tentei contato 3x, sem retorno.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar agressivo">MR</div><div class="card-name">Marcos Rezende</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 450.000</span><span class="card-change down">−42% CDI</span></div>
+          <div class="card-meta">30 jan 2026</div>
+          <div class="card-tags"><span class="card-tag agressivo">agressivo</span><span class="card-tag">urgente</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-01-30"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">20 jan</span><br>Revisão urgente — carteira exposta a cripto sem hedge.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kanban-col col-pending">
+        <div class="kanban-header"><div class="kanban-dot pending"></div><span class="kanban-title">Pendente</span><span class="kanban-count">2</span></div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar moderado">AC</div><div class="card-name">Ana Carolina Ribeiro</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 1.350.000</span><span class="card-change up">105% CDI</span></div>
+          <div class="card-meta">18 mar 2026</div>
+          <div class="card-tags"><span class="card-tag moderado">moderado</span><span class="card-tag">tributário</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option selected>Pendente</option><option>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-03-18"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">10 mar</span><br>Aguardando docs do come-cotas para rebalancear.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar conservador">GT</div><div class="card-name">Gustavo Tavares</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 720.000</span><span class="card-change warn">87% CDI</span></div>
+          <div class="card-meta">22 mar 2026</div>
+          <div class="card-tags"><span class="card-tag conservador">conservador</span><span class="card-tag">previdência</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option selected>Pendente</option><option>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-03-22"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div><div class="panel-comments"></div><textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kanban-col col-progress">
+        <div class="kanban-header"><div class="kanban-dot progress"></div><span class="kanban-title">Em Progresso</span><span class="kanban-count">3</span></div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar conservador">FM</div><div class="card-name">Felipe Martins</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 560.000</span><span class="card-change warn">72% CDI</span></div>
+          <div class="card-meta">25 mar 2026</div>
+          <div class="card-tags"><span class="card-tag conservador">conservador</span><span class="card-tag">renda fixa</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option selected>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-03-25"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">12 mar</span><br>Rebalanceamento RF em andamento, migrando de CDB para LCI.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar arrojado">BT</div><div class="card-name">Beatriz Torres</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 1.240.000</span><span class="card-change up">134% CDI</span></div>
+          <div class="card-meta">28 mar 2026</div>
+          <div class="card-tags"><span class="card-tag arrojado">arrojado</span><span class="card-tag">internacional</span><span class="card-tag">fiis</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option selected>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-03-28"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">08 mar</span><br>Revisão de alocação internacional — aumentar EWZ e reduzir S&P.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar moderado">DA</div><div class="card-name">Diego Almeida</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 380.000</span><span class="card-change warn">48% CDI</span></div>
+          <div class="card-meta">01 abr 2026</div>
+          <div class="card-tags"><span class="card-tag moderado">moderado</span><span class="card-tag">novo cliente</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option selected>Em Progresso</option><option>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-04-01"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">05 mar</span><br>Montando carteira inicial — 60% RF, 25% FIIs, 15% ações.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-card">+ novo cliente</div>
+      </div>
+
+      <div class="kanban-col col-ok">
+        <div class="kanban-header"><div class="kanban-dot ok"></div><span class="kanban-title">Em Dia</span><span class="kanban-count">5</span></div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar moderado">MF</div><div class="card-name">Maria Fernanda de Souza</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 2.847.320</span><span class="card-change up">142% CDI</span></div>
+          <div class="card-meta">14 abr 2026</div>
+          <div class="card-tags"><span class="card-tag moderado">moderado</span><span class="card-tag">aposentadoria</span><span class="card-tag">educação</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option selected>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-04-14"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">14 mar</span><br>Carteira saudável, mantendo alocação atual.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar agressivo">JP</div><div class="card-name">João Pedro Mendes</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 4.120.500</span><span class="card-change up">168% CDI</span></div>
+          <div class="card-meta">12 abr 2026</div>
+          <div class="card-tags"><span class="card-tag agressivo">agressivo</span><span class="card-tag">independência</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option selected>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-04-12"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">12 mar</span><br>Performance excepcional — 168% CDI no ano.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar moderado">CM</div><div class="card-name">Carlos Moreira</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 1.680.000</span><span class="card-change up">112% CDI</span></div>
+          <div class="card-meta">11 abr 2026</div>
+          <div class="card-tags"><span class="card-tag moderado">moderado</span><span class="card-tag">imóvel</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option selected>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-04-11"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div><div class="panel-comments"></div><textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea></div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar conservador">PL</div><div class="card-name">Patrícia Lima</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 920.800</span><span class="card-change up">101% CDI</span></div>
+          <div class="card-meta">10 abr 2026</div>
+          <div class="card-tags"><span class="card-tag conservador">conservador</span><span class="card-tag">reserva</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option selected>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-04-10"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div><div class="panel-comments"></div><textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea></div>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <button class="card-edit-btn" onclick="event.stopPropagation();togglePanel(this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+          <div class="card-top"><div class="card-avatar arrojado">RS</div><div class="card-name">Ricardo Santos Oliveira</div></div>
+          <div class="card-details"><span class="card-patrimonio">R$ 890.200</span><span class="card-change down">−18% CDI</span></div>
+          <div class="card-meta">10 abr 2026</div>
+          <div class="card-tags"><span class="card-tag arrojado">arrojado</span><span class="card-tag">aposentadoria</span></div>
+          <div class="card-panel">
+            <div class="panel-row"><div class="panel-label">status</div><select class="panel-select"><option>Atrasado</option><option>Pendente</option><option>Em Progresso</option><option selected>Em Dia</option></select></div>
+            <div class="panel-row"><div class="panel-label">deadline</div><input class="panel-input" type="date" value="2026-04-10"></div>
+            <div class="panel-row"><div class="panel-label">comentários</div>
+              <div class="panel-comments"><div class="panel-comment"><span class="panel-comment-author">Rafael</span><span class="panel-comment-date">10 mar</span><br>CDI negativo — revisar posição em ações no próximo encontro.</div></div>
+              <textarea class="panel-textarea" placeholder="adicionar comentário..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="partner.js?v=1"></script>
+  <script>
+    initSidebar('crm');
+    function togglePanel(btn) {
+      const card = btn.closest('.client-card');
+      card.querySelector('.card-panel').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

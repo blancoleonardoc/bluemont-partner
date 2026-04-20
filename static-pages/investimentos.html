@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>investimentos · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=1" />
+</head>
+<body class="partner">
+
+  <div id="sidebar-mount"></div>
+
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>investimentos</h1>
+      <p>carteira recomendada do mês.</p>
+    </div>
+
+    <div class="portfolio-row">
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th></th>
+              <th>classe</th>
+              <th>peso</th>
+              <th>tese</th>
+            </tr>
+          </thead>
+          <tbody id="carteira-tbody"></tbody>
+        </table>
+      </div>
+      <div class="card donut-card">
+        <svg id="donut" viewBox="0 0 200 200"></svg>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+  </main>
+
+  <style>
+    .dot { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:0.5rem; vertical-align:middle; }
+  </style>
+
+  <script src="partner.js?v=1"></script>
+  <script src="investimentos.js?v=1"></script>
+  <script>
+    initSidebar('investimentos');
+    initInvestimentos();
+  </script>
+</body>
+</html>

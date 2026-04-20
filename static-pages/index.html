@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dashboard · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=1" />
+</head>
+<body class="partner">
+
+  <div id="sidebar-mount"></div>
+
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>dashboard</h1>
+      <p>performance recente da sua carteira de clientes.</p>
+    </div>
+
+    <section class="kpi-grid">
+      <div class="card">
+        <div class="card-label">custódia</div>
+        <div class="card-value" id="kpi-custodia">—</div>
+        <div class="card-sub" id="kpi-custodia-sub"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">captação no mês</div>
+        <div class="card-value">
+          <span id="kpi-captacao">—</span>
+          <span class="badge" id="kpi-captacao-badge"></span>
+        </div>
+        <div class="card-sub" id="kpi-captacao-sub"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">oportunidades</div>
+        <div class="card-value" id="kpi-opps-total">—</div>
+        <div class="card-sub" id="kpi-opps-30d"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">receita</div>
+        <div class="card-value" id="kpi-receita-total">—</div>
+        <div class="card-sub" id="kpi-receita-30d"></div>
+      </div>
+    </section>
+
+    <section class="card chart-card">
+      <h3>custódia · últimos 12 meses</h3>
+      <p class="chart-sub">evolução mensal em reais</p>
+      <div class="chart-wrap"><svg id="chart-custodia"></svg></div>
+    </section>
+  </main>
+
+  <script src="partner.js?v=1"></script>
+  <script>
+    initSidebar('dashboard');
+    initDashboard();
+  </script>
+</body>
+</html>
