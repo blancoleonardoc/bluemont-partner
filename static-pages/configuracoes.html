@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>configurações · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=2" />
+</head>
+<body class="partner">
+  <div id="sidebar-mount"></div>
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>configurações</h1>
+      <p>perfil, pagamentos e preferências.</p>
+    </div>
+
+    <section class="card">
+      <h3>meu perfil</h3>
+      <div class="form-grid">
+        <label>nome<input id="f-first" type="text" /></label>
+        <label>sobrenome<input id="f-last" type="text" /></label>
+        <label>email<input id="f-email" type="email" disabled /></label>
+        <div class="profile-photo">
+          <img id="f-photo" alt="" />
+          <div class="insight-sub">foto vem do google</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>pagamentos</h3>
+      <div class="form-grid">
+        <label>chave pix
+          <input id="f-pix" type="text" placeholder="sua chave pix" />
+        </label>
+        <label>tipo de chave
+          <select id="f-pix-type">
+            <option value="">—</option>
+            <option value="cpf">CPF</option>
+            <option value="cnpj">CNPJ</option>
+            <option value="email">Email</option>
+            <option value="telefone">Telefone</option>
+            <option value="aleatoria">Chave aleatória</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>preferências</h3>
+      <div class="prefs">
+        <div><strong>tema</strong> <span class="insight-sub">dark (fixo por enquanto)</span></div>
+        <label class="toggle">
+          <input id="f-notif" type="checkbox" />
+          <span>receber alertas no dashboard</span>
+        </label>
+      </div>
+    </section>
+
+    <div class="form-actions">
+      <button id="btn-save" class="btn">salvar alterações</button>
+      <span id="save-status" class="insight-sub"></span>
+    </div>
+  </main>
+  <script src="partner.js?v=2"></script>
+  <script src="configuracoes.js?v=1"></script>
+  <script>initSidebar('configuracoes'); initConfig();</script>
+</body>
+</html>

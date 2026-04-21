@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agenda · bluemont partner</title>
+  <link rel="stylesheet" href="../style.css?v=5" />
+  <link rel="stylesheet" href="partner.css?v=2" />
+</head>
+<body class="partner">
+  <div id="sidebar-mount"></div>
+  <main class="hub-main">
+    <div class="page-head">
+      <h1>agenda</h1>
+      <p>seus eventos do google calendar + follow-ups sugeridos.</p>
+    </div>
+
+    <section class="card">
+      <h3>hoje</h3>
+      <ul class="agenda-list" id="agenda-today"><li class="insight-empty">carregando…</li></ul>
+    </section>
+
+    <section class="card">
+      <h3>próximos 7 dias</h3>
+      <ul class="agenda-list" id="agenda-week"></ul>
+    </section>
+
+    <section class="card">
+      <h3>follow-ups sugeridos</h3>
+      <p class="chart-sub">clientes que precisam de atenção esta semana</p>
+      <ul class="agenda-list" id="agenda-followups"></ul>
+    </section>
+  </main>
+  <script src="partner.js?v=2"></script>
+  <script src="agenda.js?v=1"></script>
+  <script>initSidebar('agenda'); initAgenda();</script>
+</body>
+</html>

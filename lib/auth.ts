@@ -12,6 +12,13 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: 'openid email profile https://www.googleapis.com/auth/calendar.readonly',
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
     }),
   ],
   session: { strategy: 'jwt' },
@@ -32,12 +39,25 @@ export const authOptions: NextAuthOptions = {
       }
       return ok ? true : '/login?error=unauthorized';
     },
-    async jwt({ token, user }) {
+    async jwt({ token, account, user }) {
+      // primeira vez que loga, account vem preenchido com tokens do Google
+      if (account) {
+        (token as any).accessToken = account.access_token;
+        (token as any).refreshToken = account.refresh_token;
+        (token as any).accessTokenExpires = account.expires_at ? account.expires_at * 1000 : undefined;
+      }
       if (user?.email) token.email = user.email;
+      if (user?.name) token.name = user.name;
+      if (user?.image) (token as any).picture = user.image;
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token.email) session.user.email = token.email as string;
+      if (session.user) {
+        if (token.email) session.user.email = token.email as string;
+        if (token.name) session.user.name = token.name as string;
+        if ((token as any).picture) session.user.image = (token as any).picture;
+      }
+      (session as any).accessToken = (token as any).accessToken;
       return session;
     },
   },
